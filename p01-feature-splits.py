@@ -13,7 +13,7 @@ from shared import TODO
 # Let's define a really simple class with two fields:
 @dataclass
 class DataPoint:
-    temperature: float
+    temperature: float 
     frozen: bool
 
 
