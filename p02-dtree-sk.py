@@ -1,4 +1,5 @@
 """
+Anna Spiro 
 In this lab, we'll go ahead and use the sklearn API to learn a decision tree over some actual data!
  
 Documentation:
@@ -71,54 +72,79 @@ print(
     )
 )
 
-#%% Now actually train the model...
-
-# Create a regression-tree object:
-f = DecisionTreeClassifier(
-    splitter="best",
-    max_features=None,
-    criterion="gini",
-    max_depth=None,
-    random_state=13,
-)  # type:ignore
-
 """
-# train the tree!
-f.fit(train_X, train_y)
- 
-# did it memorize OK?
-print("Score on Training: {:.3f}".format(f.score(train_X, train_y)))
-print("Score on Testing: {:.3f}".format(f.score(test_X, test_y)))
-"""
-
 ## Actual 'practical' assignment.
 TODO(
     "1. Figure out what all of the parameters I listed for the DecisionTreeClassifier do."
 )
+
+splitter (best): how to choose the split at each node (best chooses best split, or feature with the highest importance)
+max_features (None)
+criterion (gini): how to measure the quality of a split/ feature importance (gini impurity measure)
+max_depth (None): maximum depth of tree (None means that nodes are expanded until all leaves are pure)
+random_state (13): controls randomness of estimator 
+
 # Consult the documentation: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html
 TODO("2. Pick one parameter, vary it, and find some version of the 'best' setting.")
+
+chosen parameter: max_depth
 
 # Default performance:
 # There are 2079 training examples and 693 testing examples.
 # Score on Training: 1.000
 # Score on Testing: 0.889
 TODO("3. Leave clear code for running your experiment!")
+"""
 
-# change parameters for decision tree object
-f = DecisionTreeClassifier(
-    splitter="best",
-    max_features=None,
-    criterion="gini",
-    max_depth=None,
-    random_state=13,
-)  # type:ignore
+if __name__ == "__main__":
+    # chosen parameter: max_depth (note: with parameter None, max_depth = 13)
 
-# train new tree!
-f.fit(train_X, train_y)
+    # create dictionary with max_depth as key, [training, testing] performance as value
+    performance_dict = {}
 
-print(f.tree_.max_depth)
-print("here???")
+    for i in range(1, 14):
+        current_max_depth = i
 
-# check new tree: did it memorize OK?
-print("Score on Training: {:.3f}".format(f.score(train_X, train_y)))
-print("Score on Testing: {:.3f}".format(f.score(test_X, test_y)))
+        # change parameters for decision tree object
+        f = DecisionTreeClassifier(
+            splitter="best",
+            max_features=None,
+            criterion="gini",
+            max_depth=current_max_depth,
+            random_state=13,
+        )  # type:ignore
+
+        # train new tree!
+        f.fit(train_X, train_y)
+
+        performance_dict[current_max_depth] = [
+            f.score(train_X, train_y),
+            f.score(test_X, test_y),
+        ]
+
+    # find "best" max_depth and print results
+
+    # initialize
+    best_depth = 0
+    best_testing = 0
+
+    for key in performance_dict:
+        # determine best results
+        if performance_dict[key][1] > best_testing:
+            best_depth = key
+            best_testing = performance_dict[key][1]
+
+        # print results
+        print("max_depth set to " + str(key))
+        print("score on training: " + str(performance_dict[key][0]))
+        print("score on testing: " + str(performance_dict[key][1]))
+        print("\n")
+
+    print(
+        "Best depth was found to be "
+        + str(best_depth)
+        + ", which is associated with a testing score of "
+        + str(best_testing)
+        + "."
+    )
+# %%
