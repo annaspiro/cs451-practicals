@@ -103,7 +103,6 @@ def impurity_of_split(points: List[DataPoint], split: float) -> float:
 if __name__ == "__main__":
     print("Initial Impurity: ", gini_impurity(data))
     print("Impurity of first-six (all True): ", gini_impurity(data[:6]))
-    print("")
     for split in find_candidate_splits(data):
         score = impurity_of_split(data, split)
         print("splitting at {} gives us impurity {}".format(split, score))
