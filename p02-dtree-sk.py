@@ -1,15 +1,15 @@
 """
 In this lab, we'll go ahead and use the sklearn API to learn a decision tree over some actual data!
-
+ 
 Documentation:
 https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html
-
+ 
 We'll need to install sklearn.
 Either use the GUI, or use pip:
-
-    pip install scikit-learn
-    # or: use install everything from the requirements file.
-    pip install -r requirements.txt
+ 
+   pip install scikit-learn
+   # or: use install everything from the requirements file.
+   pip install -r requirements.txt
 """
 
 # We won't be able to get past these import statments if you don't install the library!
@@ -82,12 +82,14 @@ f = DecisionTreeClassifier(
     random_state=13,
 )  # type:ignore
 
+"""
 # train the tree!
 f.fit(train_X, train_y)
-
+ 
 # did it memorize OK?
 print("Score on Training: {:.3f}".format(f.score(train_X, train_y)))
 print("Score on Testing: {:.3f}".format(f.score(test_X, test_y)))
+"""
 
 ## Actual 'practical' assignment.
 TODO(
@@ -95,8 +97,28 @@ TODO(
 )
 # Consult the documentation: https://scikit-learn.org/stable/modules/generated/sklearn.tree.DecisionTreeClassifier.html
 TODO("2. Pick one parameter, vary it, and find some version of the 'best' setting.")
+
 # Default performance:
 # There are 2079 training examples and 693 testing examples.
 # Score on Training: 1.000
 # Score on Testing: 0.889
 TODO("3. Leave clear code for running your experiment!")
+
+# change parameters for decision tree object
+f = DecisionTreeClassifier(
+    splitter="best",
+    max_features=None,
+    criterion="gini",
+    max_depth=None,
+    random_state=13,
+)  # type:ignore
+
+# train new tree!
+f.fit(train_X, train_y)
+
+print(f.tree_.max_depth)
+print("here???")
+
+# check new tree: did it memorize OK?
+print("Score on Training: {:.3f}".format(f.score(train_X, train_y)))
+print("Score on Testing: {:.3f}".format(f.score(test_X, test_y)))
