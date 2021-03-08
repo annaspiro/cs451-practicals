@@ -1,5 +1,6 @@
 # Decision Trees: Feature Splits
 
+#%%
 # Python typing introduced in 3.5: https://docs.python.org/3/library/typing.html
 from typing import List
 
@@ -9,14 +10,21 @@ from dataclasses import dataclass
 # My python file (very limited for now, but we will build up shared functions)
 from shared import TODO
 
-
+#%%
 # Let's define a really simple class with two fields:
 @dataclass
 class DataPoint:
     temperature: float 
     frozen: bool
 
+    def secret_answer(self) -> bool:
+        return self.temperature <= 32
 
+    def clone(self) -> "DataPoint":
+        return DataPoint(self.temperature, self.frozen)
+
+
+# Fahrenheit, sorry.
 data = [
     # vermont temperatures; frozen=True
     DataPoint(0, True),
@@ -25,7 +33,9 @@ data = [
     DataPoint(11, True),
     DataPoint(6, True),
     DataPoint(28, True),
+    DataPoint(31, True),
     # warm temperatures; frozen=False
+    DataPoint(33, False),
     DataPoint(45, False),
     DataPoint(76, False),
     DataPoint(60, False),
@@ -48,7 +58,7 @@ for d in data:
 
 def find_candidate_splits(data: List[DataPoint]) -> List[float]:
     midpoints = []
-    TODO("loop through data and generate candidate split locations")
+    TODO("find the midpoints!")
     return midpoints
 
 
@@ -69,7 +79,7 @@ def impurity_of_split(points: List[DataPoint], split: float) -> float:
     smaller = []
     bigger = []
 
-    TODO("split points into smaller and bigger lists based on split!")
+    TODO("split the points based on the candidate split value")
 
     return gini_impurity(smaller) + gini_impurity(bigger)
 
@@ -79,8 +89,7 @@ if __name__ == "__main__":
     print("Impurity of first-six (all True): ", gini_impurity(data[:6]))
     print("")
     for split in find_candidate_splits(data):
-        print(
-            "splitting at {} gives us impurity {}".format(
-                split, impurity_of_split(data, split)
-            )
-        )
+        score = impurity_of_split(data, split)
+        print("splitting at {} gives us impurity {}".format(split, score))
+        if score == 0.0:
+            break
