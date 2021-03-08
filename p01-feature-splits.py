@@ -14,7 +14,7 @@ from shared import TODO
 # Let's define a really simple class with two fields:
 @dataclass
 class DataPoint:
-    temperature: float 
+    temperature: float
     frozen: bool
 
     def secret_answer(self) -> bool:
@@ -51,6 +51,10 @@ def is_water_frozen(temperature: float) -> bool:
     return temperature <= 32
 
 
+def get_temp(pt: DataPoint):
+    return pt.temperature
+
+
 # Make sure the data I invented is actually correct...
 for d in data:
     assert d.frozen == is_water_frozen(d.temperature)
@@ -58,7 +62,15 @@ for d in data:
 
 def find_candidate_splits(data: List[DataPoint]) -> List[float]:
     midpoints = []
-    TODO("find the midpoints!")
+    # sort by temperature
+    data.sort(key=get_temp)
+
+    # loop looking at two at a time
+    for i in range(len(data) - 1):
+        left = data[i]
+        right = data[i + 1]
+        mid = (left.temperature + right.temperature) / 2.0
+        midpoints.append(mid)
     return midpoints
 
 
@@ -79,7 +91,11 @@ def impurity_of_split(points: List[DataPoint], split: float) -> float:
     smaller = []
     bigger = []
 
-    TODO("split the points based on the candidate split value")
+    for p in points:
+        if p.temperature < split:
+            smaller.append(p)
+        else:
+            bigger.append(p)
 
     return gini_impurity(smaller) + gini_impurity(bigger)
 
