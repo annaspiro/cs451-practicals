@@ -33,7 +33,7 @@ with open(dataset_local_path("poetry_id.jsonl")) as fp:
 ## CONVERT TO MATRIX:
 
 feature_numbering = DictVectorizer(sort=True)
-X = feature_numbering.fit_transform(examples)
+X = feature_numbering.fit_transform(examples) / 1000
 
 print("Features as {} matrix.".format(X.shape))
 
@@ -128,7 +128,7 @@ def consider_logistic_regression() -> ExperimentResult:
         params = {
             "random_state": rnd,
             "penalty": "l2",
-            "max_iter": 100,
+            "max_iter": 10000,
             "C": 1.0,
         }
         f = LogisticRegression(**params)
@@ -144,18 +144,31 @@ def consider_neural_net() -> ExperimentResult:
     print("Consider Multi-Layer Perceptron.")
     performances: List[ExperimentResult] = []
     for rnd in range(3):
-        params = {
-            "hidden_layer_sizes": (32,),
-            "random_state": rnd,
-            "solver": "lbfgs",
-            "max_iter": 500,
-            "alpha": 0.0001,
-        }
-        f = MLPClassifier(**params)
-        f.fit(X_train, y_train)
-        vali_acc = f.score(X_vali, y_vali)
-        result = ExperimentResult(vali_acc, params, f)
-        performances.append(result)
+        for current_alpha in [
+            0.00001,
+            0.00005,
+            0.0001,
+            0.0005,
+            0.001,
+            0.005,
+            0.01,
+            0.05,
+            0.1,
+        ]:
+            for current_layer in range(90, 111):
+                for current_solver in ["lbfgs", "sgd", "adam"]:
+                    params = {
+                        "hidden_layer_sizes": (current_layer,),
+                        "random_state": rnd,
+                        "solver": current_solver,
+                        "max_iter": 10000,
+                        "alpha": current_alpha,
+                    }
+                    f = MLPClassifier(**params)
+                    f.fit(X_train, y_train)
+                    vali_acc = f.score(X_vali, y_vali)
+                    result = ExperimentResult(vali_acc, params, f)
+                    performances.append(result)
 
     return max(performances, key=lambda result: result.vali_acc)
 
@@ -190,7 +203,22 @@ simple_boxplot(
 )
 
 TODO("1. Understand consider_decision_trees; I have 'tuned' it.")
+"""
+Parameters tuned in consider_decision_trees: max_depth. 
+"""
 TODO("2. Find appropriate max_iter settings to stop warning messages.")
+"""
+Note: in addition to increasing 'max_iter' on both logistic regression and neural net, I also divided by 1000 on line for 36 such that the 
+warnings would stop for the MLP. 
+"""
 TODO(
     "3. Pick a model: {perceptron, logistic regression, neural_network} and optimize it!"
 )
+"""
+Chosen model: MLP
+hidden_layer_states is the number of nodes in a (single) hidden layer. 
+The default value is 100 -- I varied it from 90 to 110. I did not vary the number of hidden layers
+to reduce runtime. I chose to test the alpha values [0.00001, 0.00005, 0.0001, 0.0005, 0.001, 0.005, 0.01, 0.05, 0.1]. 
+I tested all possible solvers: "lbfgs", "sgd", and "adam". 
+Note: the runtime to test hidden_layer_states from 90 to 110 is long -- reduce options here to reduce runtime. 
+"""
